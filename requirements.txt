@@ -1,0 +1,9 @@
+numpy
+scipy
+meteostat
+scikit-learn
+pandas
+matplotlib
+tensorflow
+black
+ipykernel

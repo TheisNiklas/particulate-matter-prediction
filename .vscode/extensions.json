@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "njpwerner.autodocstring",
+        "iterative.dvc",
+        "eamodio.gitlens",
+        "ms-python.isort",
+        "ms-toolsai.jupyter",
+        "ms-vsliveshare.vsliveshare",
+        "pkief.material-icon-theme",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "donjayamanne.python-environment-manager",
+        "donjayamanne.python-extension-pack"
+    ]
+}
