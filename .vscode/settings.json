@@ -6,8 +6,11 @@
     "python.languageServer": "Pylance",
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.organizeImports": true,
         }
     },
-    "notebook.formatOnSave.enabled": true
+    "notebook.formatOnSave.enabled": true,
+    "editor.formatOnSave": true,
+    "python.linting.pylintArgs": ["--disable=C0111,C0103"],
+    "notebook.output.scrolling": true
 }
