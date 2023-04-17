@@ -11,7 +11,12 @@ from pandas import DataFrame, Series, to_datetime
 
 
 class DailyData(Enum):
+    """
+    Enum containing all possible different daily informations.
+    """
+
     Weathercode = "weathercode"
+    """Code specifying the general weather, like rainy, sunny etc."""
     MaximumTemperature_2m = "temperature_2m_max"
     MinimumTemperature_2m = "temperature_2m_min"
     MeanTemperature_2m = "temperature_2m_mean"
@@ -32,6 +37,10 @@ class DailyData(Enum):
 
 
 class HourlyData(Enum):
+    """
+    Enum containing all possible different hourly informations.
+    """
+
     Temperature_2m = "temperature_2m"
     RelativeHumidity_2m = "relativehumidity_2m"
     Dewpoint_2m = "dewpoint_2m"
@@ -68,6 +77,8 @@ class HourlyData(Enum):
 
 
 class Timezones(Enum):
+    """Timezones as accepted by the model based API."""
+
     America_Anchorage = "America/Anchorage"
     America_Los_Angeles = "America/Los_Angeles"
     America_Denver = "America/Denver"
@@ -119,6 +130,31 @@ class ModelBasedOptions:
         wind_speed_unit: WindSpeedUnits = WindSpeedUnits.Km_h,
         rain_unit: RainUnits = RainUnits.Millimeter,
     ):
+        """Options for the model based weather data API
+
+        Args:
+            hourly (List[HourlyData], optional): List of all the measurement values that should be in the returned DataFrame for hourly data
+                If `None` no data is requested. Defaults to `None`.
+            daily (List[DailyData], optional): List of all the measurement values that should be in the returned DataFrame for daily data.
+                If `None` no data is requested. Defaults to `None`.
+            timezone (Timezones, optional): Timezone based on which the data should be calculated. Only needed when daily data is requested.
+                Defaults to `Timezones.Europe_Berlin`.
+            temperature_unit (TemperatureUnits, optional): Unit for temperature. Defaults to `TemperatureUnits.Celsius`.
+            wind_speed_unit (WindSpeedUnits, optional): Unit for wind speed. Defaults to `WindSpeedUnits.Km_h`.
+            rain_unit (RainUnits, optional): Unit for rain amounts. Defaults to `RainUnits.Millimeter`.
+
+        Example:
+        ```python
+        options = ModelBasedOptions(
+            hourly=[
+                HourlyData.Temperature_2m,
+                HourlyData.RelativeHumidity_2m,
+                HourlyData.WindDirection_10m,
+                HourlyData.WindSpeed_10m,
+            ]
+        )
+        ```
+        """
         if hourly is None:
             hourly = []
         if daily is None:
@@ -231,8 +267,31 @@ class WeatherData:
         end_date: Union[datetime, str],
         require_hourly: bool = True,
         require_daily: bool = False,
-        max_distance_m: int = 10000,
-    ) -> DataFrame:
+        max_distance_m: int = 50000,
+    ) -> Tuple[MetaDataModelBased, DataFrame, DataFrame]:
+        """
+        Gets the weather data from the nearest weather station to the specified location, that satisfies the conditions.
+
+        Args:
+            latitude (float): GPS coordinate latitude
+            longitude (float): GPS coordinate longitude
+            start_date (datetime | str): start date of the data range to be returned, datetime or iso formated date string
+            end_date (datetime | str): end date of the data range to be returned, datetime or iso formated date string
+            require_hourly (bool, optional): Whether the station has to have hourly data avaiable for the date range. Defaults to True.
+            require_daily (bool, optional): Whether the station has to have daily data avaiable for the date range. Defaults to False.
+            max_distance_m (int, optional): Maximum distance of the station to the coordinates in meters. Defaults to 50000.
+
+        Raises:
+            ValueError: If no station is in radius or has data in date range, when `require_hourly` or `require_daily` is True.
+
+        Returns:
+            Tuple[
+                meta_data (MetaDataModelBased): informations about the weather station
+                daily (DataFrame): DataFrame containing the requested daily data
+                hourly (DataFrame): DataFrame containing the requested hourly data
+            ]
+        """
+
         if isinstance(start_date, str):
             start_date = datetime.fromisoformat(start_date)
         if isinstance(end_date, str):
@@ -270,6 +329,24 @@ class WeatherData:
         end_date: Union[datetime, str],
         options: ModelBasedOptions,
     ) -> Tuple[MetaDataModelBased, DataFrame, DataFrame]:
+        """
+        Gets the weather data at the specified location. The data is based on a mathematically model and not measured directly.
+        The mathematical model uses waether station, aviation and other data to calculate the values.
+
+        Args:
+            latitude (float): GPS coordinate latitude
+            longitude (float): GPS coordinate longitude
+            start_date (Union[datetime, str]): start date of the data range to be returned, datetime or iso formated date string
+            end_date (Union[datetime, str]): end date of the data range to be returned, datetime or iso formated date string
+            options (ModelBasedOptions): Options object specifying addtional information, see `ModelBasedOptions` documentation for more informations
+
+        Returns:
+            Tuple[
+                meta_data (MetaDataModelBased): informations about the weather station
+                daily (DataFrame): DataFrame containing the requested daily data
+                hourly (DataFrame): DataFrame containing the requested hourly data
+            ]
+        """
         if isinstance(start_date, str):
             start_date = datetime.fromisoformat(start_date)
         if isinstance(end_date, str):

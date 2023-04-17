@@ -8,6 +8,7 @@ class FileTypes(Enum):
     ModelBasedData = 1
 
 
+# NOTE: unused
 class StorageManager:
     @staticmethod
     def __getFiles(file_type: FileTypes) -> List[str]:
