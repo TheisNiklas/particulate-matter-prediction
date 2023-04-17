@@ -10,7 +10,7 @@ pydoc-markdown -I src/weatherdata -m weather_data '{
         Class: 2,
         Method: 3,
         Function: 3,
-        Data: 4
+        Data: 5
       }
     }
   }' > docs/weatherdata.md
