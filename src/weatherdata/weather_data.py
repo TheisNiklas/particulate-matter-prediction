@@ -5,12 +5,9 @@ from enum import Enum
 from typing import Any, Dict, List, Tuple, Union
 from urllib.parse import urlencode
 
+import meteostat
 import requests
-from pandas import DataFrame
-
-
-class StationDataOptions:
-    pass
+from pandas import DataFrame, Series, to_datetime
 
 
 class DailyData(Enum):
@@ -166,22 +163,104 @@ class MetaDataModelBased:
         return obj
 
 
+class MetaDataStation:
+    name: str
+    country: str
+    region: str
+    wmo_id: str
+    icao_id: str
+    latitude: float
+    longitude: float
+    elevation: float
+    timezone: str
+    hourly_start: datetime
+    hourly_end: datetime
+    daily_start: datetime
+    daily_end: datetime
+    monthly_start: datetime
+    monthly_end: datetime
+    distance: float
+
+    @classmethod
+    def from_series(cls, station: Series) -> MetaDataStation:
+        obj = cls()
+        obj.name = station["name"]
+        obj.country = station["country"]
+        obj.region = station["region"]
+        obj.wmo_id = station["wmo"]
+        obj.icao_id = station["icao"]
+        obj.latitude = station["latitude"]
+        obj.longitude = station["longitude"]
+        obj.elevation = station["elevation"]
+        obj.timezone = station["timezone"]
+        obj.hourly_start = station["hourly_start"]
+        obj.hourly_end = station["hourly_end"]
+        obj.daily_start = station["daily_start"]
+        obj.daily_end = station["daily_end"]
+        obj.monthly_start = station["monthly_start"]
+        obj.monthly_end = station["monthly_end"]
+        obj.distance = station["distance"]
+        return obj
+
+
 class WeatherData:
     __baseUrl: str = "https://archive-api.open-meteo.com/v1/archive?"
 
+    __stationColumnTranslation = {
+        "temp": "temperature_C",
+        "tavg": "average_temperature_C",
+        "tmin": "minimal_temperature_C",
+        "tmax": "maximal_temperature_C",
+        "dwpt": "dew_point_C",
+        "rhum": "relative_humidity_precent",
+        "prcp": "percipation_mm",
+        "snow": "snow_depth_mm",
+        "wdir": "wind_direction_degree",
+        "wspd": "wind_speed_kmh",
+        "wpgt": "wind_gust_kmh",
+        "pres": "sea_level_pressure_hpa",
+        "tsun": "total_sunshine_minutes",
+        "coco": "weather_condition_code",
+    }
+
     @staticmethod
     def getStationData(
-        longitude: float,
         latitude: float,
+        longitude: float,
         start_date: Union[datetime, str],
         end_date: Union[datetime, str],
-        options: StationDataOptions,
+        require_hourly: bool = True,
+        require_daily: bool = False,
+        max_distance_m: int = 10000,
     ) -> DataFrame:
         if isinstance(start_date, str):
             start_date = datetime.fromisoformat(start_date)
         if isinstance(end_date, str):
             end_date = datetime.fromisoformat(end_date)
-        pass
+
+        stations_nearby = meteostat.Stations().nearby(lon=longitude, lat=latitude, radius=max_distance_m)
+        if stations_nearby.count() == 0:
+            raise ValueError(f"No stations in radius of {max_distance_m}m around location")
+        stations_nearby_df = stations_nearby.fetch()
+        current_station_index = 0
+        while True:
+            current_station = stations_nearby_df.iloc[current_station_index]
+            if WeatherData.__validateStation(current_station, start_date, end_date, require_hourly, require_daily):
+                break
+            current_station_index += 1
+            if current_station_index == stations_nearby_df.count():
+                raise ValueError("No station has data in the specified date range")
+
+        distance = current_station["distance"]
+        station_id = current_station["wmo"]
+        hourly_df = meteostat.Hourly(station_id, start_date, end_date).fetch()
+        hourly_columns = [WeatherData.__stationColumnTranslation[column] for column in hourly_df.columns]
+        hourly_df.columns = hourly_columns
+        daily_df = meteostat.Daily(station_id, start_date, end_date).fetch()
+        daily_columns = [WeatherData.__stationColumnTranslation[column] for column in daily_df.columns]
+        daily_df.columns = daily_columns
+
+        return (distance, daily_df, hourly_df)
 
     @staticmethod
     def getModelBasedData(
@@ -215,11 +294,28 @@ class WeatherData:
         query_param_str = urlencode(query_dict)
         request_url = WeatherData.__baseUrl + query_param_str
 
-        response = requests.get(request_url)
+        response = requests.get(request_url, timeout=60)
         json_data = response.json()
         meta_data = MetaDataModelBased.from_dict(json_data)
 
         daily_df = DataFrame.from_dict(json_data["daily"])
         hourly_df = DataFrame.from_dict(json_data["hourly"])
+        daily_df["time"] = to_datetime(daily_df["time"], format="%Y-%m-%d")
+        hourly_df["time"] = to_datetime(hourly_df["time"], format="%Y-%m-%dT%H:%M")
+        daily_df = daily_df.set_index("time")
+        hourly_df = hourly_df.set_index("time")
 
         return (meta_data, daily_df, hourly_df)
+
+    @staticmethod
+    def __validateStation(
+        station: Series, start_date: datetime, end_date: datetime, require_hourly: bool, require_daily: bool
+    ):
+        valid = True
+        if require_hourly:
+            valid = valid and station["hourly_start"] < start_date
+            valid = valid and station["hourly_end"] > end_date
+        if require_daily:
+            valid = valid and station["daily_start"] < start_date
+            valid = valid and station["daily_end"] > end_date
+        return valid
