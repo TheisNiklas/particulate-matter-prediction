@@ -12,5 +12,6 @@
     "notebook.formatOnSave.enabled": true,
     "editor.formatOnSave": true,
     "python.linting.pylintArgs": ["--disable=C0111,C0103", "--max-line-length=120"],
+    "notebook.output.textLineLimit": 10,
     "notebook.output.scrolling": true
 }
