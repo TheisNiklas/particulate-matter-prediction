@@ -97,7 +97,6 @@ class Timezones(Enum):
 
 class TemperatureUnits(Enum):
     Celsius = None
-
     Fahrenheit = "fahrenheit"
 
 
@@ -272,9 +271,11 @@ class WeatherData:
         require_hourly: bool = True,
         require_daily: bool = False,
         max_distance_m: int = 50000,
-    ) -> Tuple[MetaDataModelBased, DataFrame, DataFrame]:
+    ) -> Tuple[MetaDataStation, DataFrame, DataFrame]:
         """
         Gets the weather data from the nearest weather station to the specified location, that satisfies the conditions.
+
+        TODO: Add optional requirement for specific data points (e.g. temperature and percipation)
 
         Args:
             latitude (float): GPS coordinate latitude
@@ -311,10 +312,9 @@ class WeatherData:
             if WeatherData.__validateStation(current_station, start_date, end_date, require_hourly, require_daily):
                 break
             current_station_index += 1
-            if current_station_index == stations_nearby_df.count():
+            if current_station_index == stations_nearby.count():
                 raise ValueError("No station has data in the specified date range")
 
-        distance = current_station["distance"]
         station_id = current_station["wmo"]
         hourly_df = meteostat.Hourly(station_id, start_date, end_date).fetch()
         hourly_columns = [WeatherData.__stationColumnTranslation[column] for column in hourly_df.columns]
@@ -323,7 +323,9 @@ class WeatherData:
         daily_columns = [WeatherData.__stationColumnTranslation[column] for column in daily_df.columns]
         daily_df.columns = daily_columns
 
-        return (distance, daily_df, hourly_df)
+        meta_data = MetaDataStation.from_series(current_station)
+
+        return (meta_data, daily_df, hourly_df)
 
     @staticmethod
     def getModelBasedData(
