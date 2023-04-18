@@ -203,6 +203,7 @@ class MetaDataModelBased:
 
 
 class MetaDataStation:
+    id: str
     name: str
     country: str
     region: str
@@ -223,6 +224,7 @@ class MetaDataStation:
     @classmethod
     def from_series(cls, station: Series) -> MetaDataStation:
         obj = cls()
+        obj.id = station.name
         obj.name = station["name"]
         obj.country = station["country"]
         obj.region = station["region"]
@@ -271,6 +273,7 @@ class WeatherData:
         require_hourly: bool = True,
         require_daily: bool = False,
         max_distance_m: int = 50000,
+        skip_stations: List[str] | None = None,
     ) -> Tuple[MetaDataStation, DataFrame, DataFrame]:
         """
         Gets the weather data from the nearest weather station to the specified location, that satisfies the conditions.
@@ -285,7 +288,8 @@ class WeatherData:
             require_hourly (bool, optional): Whether the station has to have hourly data avaiable for the date range. Defaults to True.
             require_daily (bool, optional): Whether the station has to have daily data avaiable for the date range. Defaults to False.
             max_distance_m (int, optional): Maximum distance of the station to the coordinates in meters. Defaults to 50000.
-
+            skip_stations (List[str], optional): List of station ids that should be ignored. Defaults to [].
+            
         Raises:
             ValueError: If no station is in radius or has data in date range, when `require_hourly` or `require_daily` is True.
 
@@ -296,11 +300,13 @@ class WeatherData:
                 hourly (DataFrame): DataFrame containing the requested hourly data
             ]
         """
-
+        
         if isinstance(start_date, str):
             start_date = datetime.fromisoformat(start_date)
         if isinstance(end_date, str):
             end_date = datetime.fromisoformat(end_date)
+        if skip_stations is None:
+            skip_stations = []
 
         stations_nearby = meteostat.Stations().nearby(lon=longitude, lat=latitude, radius=max_distance_m)
         if stations_nearby.count() == 0:
@@ -310,20 +316,20 @@ class WeatherData:
         while True:
             current_station = stations_nearby_df.iloc[current_station_index]
             if WeatherData.__validateStation(current_station, start_date, end_date, require_hourly, require_daily):
-                break
+                if all([current_station.name != skip for skip in skip_stations]):
+                    break
             current_station_index += 1
             if current_station_index == stations_nearby.count():
                 raise ValueError("No station has data in the specified date range")
 
-        station_id = current_station["wmo"]
+        station_id = current_station.name
+        meta_data = MetaDataStation.from_series(current_station)
         hourly_df = meteostat.Hourly(station_id, start_date, end_date).fetch()
         hourly_columns = [WeatherData.__stationColumnTranslation[column] for column in hourly_df.columns]
         hourly_df.columns = hourly_columns
         daily_df = meteostat.Daily(station_id, start_date, end_date).fetch()
         daily_columns = [WeatherData.__stationColumnTranslation[column] for column in daily_df.columns]
         daily_df.columns = daily_columns
-
-        meta_data = MetaDataStation.from_series(current_station)
 
         return (meta_data, daily_df, hourly_df)
 

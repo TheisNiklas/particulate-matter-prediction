@@ -111,11 +111,14 @@ def getStationData(
     end_date: Union[datetime, str],
     require_hourly: bool = True,
     require_daily: bool = False,
-    max_distance_m: int = 50000
-) -> Tuple[MetaDataModelBased, DataFrame, DataFrame]
+    max_distance_m: int = 50000,
+    skip_stations: List[str] | None = None
+) -> Tuple[MetaDataStation, DataFrame, DataFrame]
 ```
 
 Gets the weather data from the nearest weather station to the specified location, that satisfies the conditions.
+
+TODO: Add optional requirement for specific data points (e.g. temperature and percipation)
 
 **Arguments**:
 
@@ -126,6 +129,7 @@ Gets the weather data from the nearest weather station to the specified location
 - `require_hourly` _bool, optional_ - Whether the station has to have hourly data avaiable for the date range. Defaults to True.
 - `require_daily` _bool, optional_ - Whether the station has to have daily data avaiable for the date range. Defaults to False.
 - `max_distance_m` _int, optional_ - Maximum distance of the station to the coordinates in meters. Defaults to 50000.
+- `skip_stations` _List[str], optional_ - List of station ids that should be ignored. Defaults to [].
   
 
 **Raises**:
