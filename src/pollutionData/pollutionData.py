@@ -1,6 +1,10 @@
+# TODO: Eine csv pro sensorID erstellen. Die csv soll folgende Information beinhalten:
+# stationID, sensorID, sensorType, datum, uhrzeit, Wert
+
 import time
-import requests
+
 import pandas as pd
+import requests
 
 df = pd.read_csv("allSensors.csv")
 listOfAllStationIDs = df["stationID"]
@@ -16,12 +20,14 @@ listOfAllData = []
 
 try:
     for sensor in listofAllSensorIDs:
-        time.sleep(30)
+        # time.sleep(30)
         print(sensor)
+        # evtl. bei request.get() den Parameter timeout erhöhen, da die API doch recht lange braucht, die Daten zu laden
         response = requests.get(api.format(sensorID=sensor, size=size, dateFrom=dateFrom, dateTo=dateTo), timeout=5)
         response_json = response.json()
 
         # TODO: Ergebnisse der Json speichern und next-link für nächste Abfrage nutzen
+
 except requests.exceptions.Timeout:
     print("The request timed out")
 except requests.exceptions.RequestException as e:
