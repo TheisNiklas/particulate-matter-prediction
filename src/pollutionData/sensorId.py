@@ -1,5 +1,5 @@
 # TODO: StationIDS auslesen und für die nächste Abfrage vorbereiten
-
+import csv
 import requests
 import pandas as pd
 
@@ -13,9 +13,16 @@ for key in response_json["Lista stacji pomiarowych"]:
 
 stationIDs = []
 for station in listOfAllStations:
-    stationIDs.append(station["Identyfikator stacji"])
+    stationID = station["Identyfikator stacji"]
+    latitude = station["WGS84 φ N"]
+    longitude = station["WGS84 λ E"]
+    stationIDs.append({"stationID": stationID, "latitude": latitude, "longitude": longitude})
 
-dict = {"StationID": stationIDs}
 
-df = pd.DataFrame(dict)
-df.to_csv("stationID.csv")
+keys = stationIDs[0].keys()
+with open("stationID.csv", "w") as output_file:
+    dict_writer = csv.DictWriter(output_file, keys)
+    dict_writer.writeheader()
+    dict_writer.writerows(stationIDs)
+
+
