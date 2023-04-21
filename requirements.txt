@@ -13,3 +13,4 @@ nbformat
 plotly
 novella
 pydoc-markdown[novella]
+requests
