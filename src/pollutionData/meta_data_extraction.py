@@ -14,7 +14,7 @@ class MetaDataExtraction:
     def __init__(self, data_path: str = "../../data/pollution/"):
         self.data_path = data_path
 
-    def extractMetaData(self):
+    def extractMetaData(self, has_sensor: bool = True):
         files = os.listdir(self.data_path)
         files_csv = [file for file in files if os.path.splitext(file)[1] == ".csv"]
 
@@ -22,7 +22,7 @@ class MetaDataExtraction:
 
         meta_data = []
         for file in files_csv:
-            station_id, sensor_id = self.__extractIds(file)
+            station_id, sensor_id = self.__extractIds(file, has_sensor)
             station_data_row = station_data.loc[station_data["stationID"] == station_id]
             latitude = station_data_row["latitude"].values[0]
             longitude = station_data_row["longitude"].values[0]
@@ -43,11 +43,13 @@ class MetaDataExtraction:
         with open(self.data_path + "meta_data.json", "w", encoding="utf-8") as json_file:
             json_file.write(json.dumps(meta_data, indent=4, default=str))
 
-    def __extractIds(self, file_name: str) -> Tuple[int, int]:
+    def __extractIds(self, file_name: str, has_sensor: bool = True) -> Tuple[int, int]:
         name, _ = os.path.splitext(file_name)
         name_parts = name.split("_")
         station_id = int(name_parts[1])
-        sensor_id = int(name_parts[2])
+        sensor_id = None
+        if has_sensor:
+            sensor_id = int(name_parts[2])
         return (station_id, sensor_id)
 
     def __extractRanges(
@@ -69,4 +71,4 @@ class MetaDataExtraction:
         return (ranges, missing_ranges)
 
 
-MetaDataExtraction("data/pollution/").extractMetaData()
+MetaDataExtraction("data/pollution/raw/2018/pm10/").extractMetaData(False)
