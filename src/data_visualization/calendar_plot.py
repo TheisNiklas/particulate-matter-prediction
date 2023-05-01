@@ -1,3 +1,8 @@
+import datetime as dt
+import math
+
+import calplot
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -132,3 +137,10 @@ result = [
 result = pd.concat(result)
 
 result.to_csv("result.csv", sep="\t")
+result = result.to_numpy().ravel()
+
+dates = pd.date_range("1/1/2022", periods=365, freq="D")
+
+events = pd.Series(result, index=dates)
+
+calplot.calplot(events)
