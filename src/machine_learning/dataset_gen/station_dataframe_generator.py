@@ -2,8 +2,9 @@ import sys
 
 sys.path.append("../../")
 
+import json
 import os
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 
@@ -28,8 +29,10 @@ class StationDataframeGenerator:
 
         # TODO: get station meta data
 
-        latitude = 50.726338
-        longitude = 16.647286
+        station_meta_data = StationDataframeGenerator.get_station_meta_data(station_id)
+
+        latitude = float(station_meta_data["latitude"])
+        longitude = float(station_meta_data["longitude"])
 
         options = ModelBasedOptions(
             hourly=[
@@ -49,10 +52,6 @@ class StationDataframeGenerator:
         df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d %H:%M:%S")
         df.set_index("timestamp", inplace=True)
 
-        print(type(df.index[0]))
-
-        print(type(weather.index[0]))
-
         temp = weather.join(df)
 
         return temp
@@ -65,3 +64,11 @@ class StationDataframeGenerator:
             return None
         full_path = os.path.join("../../../data/pollution/raw/", str(year), "pm10", file[0])
         return full_path
+
+    @staticmethod
+    def get_station_meta_data(station_id: int) -> Union[Dict[str, Any], None]:
+        meta_data = json.load(open("../../../data/pollution/station_meta_data.json", encoding="utf-8"))
+        station_meta_data = [data for data in meta_data if data["station_id"] == station_id]
+        if len(station_meta_data) == 0:
+            return None
+        return station_meta_data[0]
