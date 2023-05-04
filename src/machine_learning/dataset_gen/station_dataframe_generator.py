@@ -27,8 +27,6 @@ class StationDataframeGenerator:
 
         df.reset_index(inplace=True, drop=True)
 
-        # TODO: get station meta data
-
         station_meta_data = StationDataframeGenerator.get_station_meta_data(station_id)
 
         latitude = float(station_meta_data["latitude"])
