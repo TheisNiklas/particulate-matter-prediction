@@ -14,3 +14,4 @@ plotly
 novella
 pydoc-markdown[novella]
 requests
+ydata_profiling
