@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from weatherdata.weather_data import HourlyData, ModelBasedOptions, WeatherData
+from weatherdata.weather_data import HourlyData, ModelBasedOptions, WeatherData  # pylint: disable=import-error
 
 
 class StationDataframeGenerator:
@@ -26,8 +26,6 @@ class StationDataframeGenerator:
                     df = pd.concat([df, data_file])
 
         df.reset_index(inplace=True, drop=True)
-
-        # TODO: get station meta data
 
         station_meta_data = StationDataframeGenerator.get_station_meta_data(station_id)
 
