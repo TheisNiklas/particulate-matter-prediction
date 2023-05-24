@@ -8,7 +8,8 @@ from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from weatherdata.weather_data import HourlyData, ModelBasedOptions, WeatherData  # pylint: disable=import-error
+from weatherdata.weather_data import (  # pylint: disable=import-error
+    HourlyData, ModelBasedOptions, WeatherData)
 
 
 class StationDataframeGenerator:
