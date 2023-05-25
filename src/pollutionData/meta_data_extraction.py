@@ -28,6 +28,8 @@ class MetaDataExtraction:
             longitude = station_data_row["longitude"].values[0]
             df = pd.read_csv(self.data_path + file)
             valid_ranges, missing_ranges = self.__extractRanges(pd.to_datetime(df["date"], format="%Y-%m-%d %H:%M:%S"))
+            max = df["value"].max()
+            min = df["value"].min()
             meta_data.append(
                 {
                     "station_id": station_id,
@@ -37,6 +39,8 @@ class MetaDataExtraction:
                     "missing_ranges": missing_ranges,
                     "latitide": latitude,
                     "longitude": longitude,
+                    "max": max,
+                    "min": min,
                 }
             )
 
@@ -71,4 +75,4 @@ class MetaDataExtraction:
         return (ranges, missing_ranges)
 
 
-MetaDataExtraction("data/pollution/raw/2018/pm10/").extractMetaData(False)
+MetaDataExtraction("data/pollution/raw/2021/pm25/").extractMetaData(False)
