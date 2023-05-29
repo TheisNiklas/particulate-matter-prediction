@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from weatherdata.weather_data import (  # pylint: disable=import-error
-    HourlyData, ModelBasedOptions, WeatherData)
+from weatherdata.weather_data import HourlyData, ModelBasedOptions, WeatherData  # pylint: disable=import-error
 
 
 class StationDataframeGenerator:
@@ -25,6 +24,9 @@ class StationDataframeGenerator:
                     df = data_file
                 else:
                     df = pd.concat([df, data_file])
+
+        if df is None:
+            return df
 
         df.reset_index(inplace=True, drop=True)
 
@@ -42,9 +44,12 @@ class StationDataframeGenerator:
                 HourlyData.Precipitation_rain_showers_snow,
             ]
         )
-        _, _, weather = WeatherData.getModelBasedData(
-            latitude, longitude, df["timestamp"].loc[0], df["timestamp"].iloc[-1], options
-        )
+        try:
+            _, _, weather = WeatherData.getModelBasedData(
+                latitude, longitude, df["timestamp"].loc[0], df["timestamp"].iloc[-1], options
+            )
+        except Exception:
+            return None
 
         weather = weather.iloc[1:-23]
 
@@ -52,7 +57,9 @@ class StationDataframeGenerator:
         df.set_index("timestamp", inplace=True)
 
         temp = weather.join(df)
-
+        temp.reset_index(inplace=True)
+        temp.rename(columns={"index": "timestamp", "time": "timestamp"}, inplace=True, errors="ignore")
+        temp.set_index("timestamp", inplace=True)
         return temp
 
     @staticmethod
