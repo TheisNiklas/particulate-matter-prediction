@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("../")
+sys.path.append("../../")
 
 import json
 import os
@@ -64,16 +64,16 @@ class StationDataframeGenerator:
 
     @staticmethod
     def get_file(station_id: int, year: int) -> Union[str, None]:
-        data_files = os.listdir(f"../../data/pollution/raw/{year}/pm10")
+        data_files = os.listdir(f"../../../data/pollution/raw/{year}/pm10")
         file = [filename for filename in data_files if filename == (f"{year}_{station_id}.csv")]
         if len(file) == 0:
             return None
-        full_path = os.path.join("../../data/pollution/raw/", str(year), "pm10", file[0])
+        full_path = os.path.join("../../../data/pollution/raw/", str(year), "pm10", file[0])
         return full_path
 
     @staticmethod
     def get_station_meta_data(station_id: int) -> Union[Dict[str, Any], None]:
-        meta_data = json.load(open("../../data/pollution/station_meta_data.json", encoding="utf-8"))
+        meta_data = json.load(open("../../../data/pollution/station_meta_data.json", encoding="utf-8"))
         station_meta_data = [data for data in meta_data if data["station_id"] == station_id]
         if len(station_meta_data) == 0:
             return None
