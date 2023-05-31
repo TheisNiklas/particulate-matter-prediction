@@ -74,7 +74,12 @@ class WindowGenerator:
             else:
                 label_col_index = plot_col_index
 
-            if label_col_index is None:
+            #if label_col_index is None:
+                # plot pm10 prediction value by default
+            #    label_col_index = self.label_columns_indices.get("pm10", None)
+            
+            if  label_col_index is None:
+                # could not find pm10 index
                 continue
 
             fig.add_trace(
@@ -102,9 +107,9 @@ class WindowGenerator:
                     col=1,
                 )
 
-        fig.update_yaxes(title_text="pm10", row=1, col=1)
-        fig.update_yaxes(title_text="pm10", row=2, col=1)
-        fig.update_yaxes(title_text="pm10", row=3, col=1)
+        fig.update_yaxes(title_text=plot_col, row=1, col=1)
+        fig.update_yaxes(title_text=plot_col, row=2, col=1)
+        fig.update_yaxes(title_text=plot_col, row=3, col=1)
 
         fig.update_layout(height=1200)
         fig.show()
@@ -133,7 +138,43 @@ class WindowGenerator:
         
         self.df.drop("timestamp", axis=1, inplace=True)
         
+    def make_dataset(self, data):
+        #data = np.array(data, dtype=np.float32)
+        #ds = tf.keras.utils.timeseries_dataset_from_array(
+        #   data=data,
+        #    targets=None,
+        #    sequence_length=self.total_window_size,
+        #    sequence_stride=1,
+        #    shuffle=True,
+        #    batch_size=32,)
+        ds = tf.data.Dataset.from_tensor_slices(data)
+        ds = ds.batch(32)
+        ds = ds.map(self.split_window)
+        return ds
+    
+    @property
+    def train(self):
+        return self.make_dataset(self.windows_train)
 
+    @property
+    def val(self):
+        return self.make_dataset(self.windows_val)
+
+    @property
+    def test(self):
+        return self.make_dataset(self.windows_test)
+    
+    @property
+    def example(self):
+        """Get and cache an example batch of `inputs, labels` for plotting."""
+        result = getattr(self, '_example', None)
+        if result is None:
+            # No example batch was found, so get one from the `.train` dataset
+            result = next(iter(self.train))
+            # And cache it for next time
+            self._example = result
+        return result
+    
     def __repr__(self):
         return "\n".join(
             [
