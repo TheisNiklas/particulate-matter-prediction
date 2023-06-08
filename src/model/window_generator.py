@@ -52,8 +52,15 @@ class WindowGenerator:
 
         return inputs, labels
 
-    def plot(self, model=None, plot_col="pm10", max_subplots=3, offset=0):
-        inputs, labels = self.split_window(self.windows_train[offset:offset+max_subplots])
+    def plot(self, model=None, plot_col="pm10", max_subplots=3, offset=0, plot_version="train",):
+        if plot_version == "val":
+            inputs, labels = self.split_window(self.windows_val[offset:offset+max_subplots])
+        elif plot_version == "train":
+            inputs, labels = self.split_window(self.windows_train[offset:offset+max_subplots])
+        elif plot_version == "test":
+            inputs, labels = self.split_window(self.windows_test[offset:offset+max_subplots])
+        else:
+            return
         fig = make_subplots(rows=3, cols=1, row_heights=[400, 400, 400])
         plot_col_index = self.column_indices[plot_col]
         max_n = min(max_subplots, len(inputs))
@@ -124,7 +131,7 @@ class WindowGenerator:
                 df_copy = self.df[index : index + (self.total_window_size)].copy().drop("timestamp", axis=1)
                 windows.append(df_copy)
         
-        windows_stack_train_val = tf.stack(windows[:int(train_size + val_size * len(windows))])
+        windows_stack_train_val = tf.stack(windows[:int((train_size + val_size) * len(windows))])
         windows_stack_test = tf.stack(windows[int(len(windows) - len(windows) * test_size): int(len(windows))])
 
         windows_stack_shuffled = tf.random.shuffle(windows_stack_train_val, seed=seed)
@@ -133,7 +140,7 @@ class WindowGenerator:
         val_count = int(len(windows_stack_shuffled) * (val_size / (train_size + val_size)))
         
         self.windows_train = windows_stack_shuffled[: train_count]
-        self.windows_val = windows_stack_shuffled[train_count : val_count]
+        self.windows_val = windows_stack_shuffled[train_count : train_count + val_count]
         self.windows_test = tf.random.shuffle(windows_stack_test, seed=seed)
         
         self.df.drop("timestamp", axis=1, inplace=True)
