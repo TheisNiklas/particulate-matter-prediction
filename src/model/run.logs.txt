@@ -30,3 +30,9 @@ Start run: dropout_0.6
 Finished run: dropout_0.6
 Start run: loss_huber
 Finished run: loss_huber
+Start run: station_530
+Finished run: station_530
+Start run: station_538
+Finished run: station_538
+Start run: station_538_without_sin
+Finished run: station_538_without_sin
