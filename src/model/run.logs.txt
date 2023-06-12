@@ -36,3 +36,8 @@ Start run: station_538
 Finished run: station_538
 Start run: station_538_without_sin
 Finished run: station_538_without_sin
+Start run: station_530_7lstmlayer
+Finished run: station_530_7lstmlayer
+Start run: station_538_7lstmlayer
+Start run: station_538_7lstmlayer
+Finished run: station_538_7lstmlayer
