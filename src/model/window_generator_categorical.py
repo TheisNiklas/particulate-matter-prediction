@@ -8,7 +8,9 @@ from plotly.subplots import make_subplots
 class WindowGenerator:
     """_summary_"""
 
-    def __init__(self, input_width: int, label_width: int, shift: int, df: pd.DataFrame, label_columns=None, window_step=1):
+    def __init__(
+        self, input_width: int, label_width: int, shift: int, df: pd.DataFrame, label_columns=None, window_step=1
+    ):
         self.df = df
         self.window_step = window_step
 
@@ -44,9 +46,16 @@ class WindowGenerator:
         labels = features[:, self.labels_slice, :]
 
         if self.label_columns is not None:
-            labels = tf.stack([labels[:, :, self.column_indices[name]] for name in self.label_columns], axis=-1)
+            labels = tf.stack(
+                [
+                    tf.one_hot(tf.cast(labels[:, :, self.column_indices[name]], "int64"), 6)
+                    for name in self.label_columns
+                ],
+                axis=-1,
+            )
+
+            print(labels.shape)
         # one hot encode labels
-        labels = tf.one_hot(labels, 6)
         # Slicing doesn't preserve static shape information, so set the shapes
         # manually. This way the `tf.data.Datasets` are easier to inspect.
         inputs.set_shape([None, self.input_width, None])
@@ -54,13 +63,20 @@ class WindowGenerator:
 
         return inputs, labels
 
-    def plot(self, model=None, plot_col="pm10", max_subplots=3, offset=0, plot_version="train",):
+    def plot(
+        self,
+        model=None,
+        plot_col="pm10",
+        max_subplots=3,
+        offset=0,
+        plot_version="train",
+    ):
         if plot_version == "val":
-            inputs, labels = self.split_window(self.windows_val[offset:offset+max_subplots])
+            inputs, labels = self.split_window(self.windows_val[offset : offset + max_subplots])
         elif plot_version == "train":
-            inputs, labels = self.split_window(self.windows_train[offset:offset+max_subplots])
+            inputs, labels = self.split_window(self.windows_train[offset : offset + max_subplots])
         elif plot_version == "test":
-            inputs, labels = self.split_window(self.windows_test[offset:offset+max_subplots])
+            inputs, labels = self.split_window(self.windows_test[offset : offset + max_subplots])
         else:
             return
         fig = make_subplots(rows=3, cols=1, row_heights=[400, 400, 400])
@@ -83,11 +99,11 @@ class WindowGenerator:
             else:
                 label_col_index = plot_col_index
 
-            #if label_col_index is None:
-                # plot pm10 prediction value by default
+            # if label_col_index is None:
+            # plot pm10 prediction value by default
             #    label_col_index = self.label_columns_indices.get("pm10", None)
-            
-            if  label_col_index is None:
+
+            if label_col_index is None:
                 # could not find pm10 index
                 continue
 
@@ -132,24 +148,24 @@ class WindowGenerator:
             if window_end["timestamp"] - window_begin["timestamp"] == pd.Timedelta(hours=self.total_window_size):
                 df_copy = self.df[index : index + (self.total_window_size)].copy().drop("timestamp", axis=1)
                 windows.append(df_copy)
-        
-        windows_stack_train_val = tf.stack(windows[:int((train_size + val_size) * len(windows))])
-        windows_stack_test = tf.stack(windows[int(len(windows) - len(windows) * test_size): int(len(windows))])
+
+        windows_stack_train_val = tf.stack(windows[: int((train_size + val_size) * len(windows))])
+        windows_stack_test = tf.stack(windows[int(len(windows) - len(windows) * test_size) : int(len(windows))])
 
         windows_stack_shuffled = tf.random.shuffle(windows_stack_train_val, seed=seed)
-        
+
         train_count = int(len(windows_stack_shuffled) * (train_size / (train_size + val_size)))
         val_count = int(len(windows_stack_shuffled) * (val_size / (train_size + val_size)))
-        
-        self.windows_train = windows_stack_shuffled[: train_count]
+
+        self.windows_train = windows_stack_shuffled[:train_count]
         self.windows_val = windows_stack_shuffled[train_count : train_count + val_count]
         self.windows_test = tf.random.shuffle(windows_stack_test, seed=seed)
-        
+
         self.df.drop("timestamp", axis=1, inplace=True)
-        
+
     def make_dataset(self, data):
-        #data = np.array(data, dtype=np.float32)
-        #ds = tf.keras.utils.timeseries_dataset_from_array(
+        # data = np.array(data, dtype=np.float32)
+        # ds = tf.keras.utils.timeseries_dataset_from_array(
         #   data=data,
         #    targets=None,
         #    sequence_length=self.total_window_size,
@@ -160,7 +176,7 @@ class WindowGenerator:
         ds = ds.batch(32)
         ds = ds.map(self.split_window)
         return ds
-    
+
     @property
     def train(self):
         return self.make_dataset(self.windows_train)
@@ -172,18 +188,18 @@ class WindowGenerator:
     @property
     def test(self):
         return self.make_dataset(self.windows_test)
-    
+
     @property
     def example(self):
         """Get and cache an example batch of `inputs, labels` for plotting."""
-        result = getattr(self, '_example', None)
+        result = getattr(self, "_example", None)
         if result is None:
             # No example batch was found, so get one from the `.train` dataset
             result = next(iter(self.train))
             # And cache it for next time
             self._example = result
         return result
-    
+
     def __repr__(self):
         return "\n".join(
             [
