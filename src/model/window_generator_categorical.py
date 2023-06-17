@@ -46,20 +46,23 @@ class WindowGenerator:
         labels = features[:, self.labels_slice, :]
 
         if self.label_columns is not None:
-            labels = tf.stack(
-                [
-                    tf.one_hot(tf.cast(labels[:, :, self.column_indices[name]], "int64"), 6)
-                    for name in self.label_columns
-                ],
-                axis=-1,
-            )
+            labels = tf.stack([labels[:, :, self.column_indices[name]] for name in self.label_columns], axis=-1)
+
+            #labels = tf.stack(
+            #    [
+            #        tf.one_hot(tf.cast(labels[:, :, self.column_indices[name]], "int64"), 6)
+            #        for name in self.label_columns
+            #    ],
+            #    axis=-1,
+            #)
 
             print(labels.shape)
         # one hot encode labels
         # Slicing doesn't preserve static shape information, so set the shapes
         # manually. This way the `tf.data.Datasets` are easier to inspect.
         inputs.set_shape([None, self.input_width, None])
-        labels.set_shape([None, self.label_width, 6])
+        #labels.set_shape([None, self.label_width, 6])
+        labels.set_shape([None, self.label_width, None])
 
         return inputs, labels
 
@@ -123,7 +126,7 @@ class WindowGenerator:
                 fig.add_trace(
                     go.Scatter(
                         x=self.label_indices,
-                        y=predictions[n, :, label_col_index].numpy(),
+                        y=[p.argmax() for  p in predictions[n, :, :].numpy()],
                         name="Predictions",
                         marker=dict(color="#ff7f0e"),
                         mode="markers",
