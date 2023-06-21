@@ -88,7 +88,7 @@ def init_model(params: Params):
     cnn_lstm_model = tf.keras.models.Sequential()
     # Shape [batch, time, features] => [batch, CONV_WIDTH, features]
     cnn_lstm_model.add(tf.keras.layers.Normalization())
-    cnn_lstm_model.add(tf.keras.layers.Lambda(lambda x: x[:, -init_kernel_size:, :]))
+    cnn_lstm_model.add(tf.keras.layers.Lambda(lambda x: x[:, :, :]))
     # Shape => [batch, 1, conv_units]
     cnn_lstm_model.add(
         tf.keras.layers.Conv1D(
