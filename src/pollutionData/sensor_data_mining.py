@@ -1,4 +1,5 @@
-# Methode um alle Messdaten eines Sensors abzurufen und in einer CSV-Datei zu speichern.
+# Extract the data from the API for all stations for the year 2022 under the limitation of only 2 API calls per minute
+
 import csv
 import os
 import time
@@ -26,7 +27,7 @@ def get_all_sensor_data_with_link(link_next: str, file_name: str):
     list_of_sensor_data: List[Dict[str, Any]] = []
     try:
         response = requests.get(link_next, timeout=60)
-    except Exception as e:
+    except Exception:
         pass
 
     while not response.ok:
@@ -66,5 +67,5 @@ def crawling(station_df: pd.DataFrame, date_from, date_to):
         get_all_sensor_data(sensor, date_from, date_to)
 
 
-df = pd.read_csv("allSensors.csv")
+df = pd.read_csv("../../data/pollution/allSensors.csv")
 crawling(df, "2022-01-01 00:00", "2022-12-31 23:59")

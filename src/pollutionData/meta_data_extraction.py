@@ -1,11 +1,21 @@
+# Analyse the raw data and generate a meta data per year and pm type.
+# The meta data contains: 
+#   station_id
+#   sensor_id
+#   filename
+#   valid_ranges - list of ranges with valid values
+#   missing_ranges - list of ranges with missing values
+#   latitide
+#   longitude
+#   max - max value of the year
+#   min - min value of the year
+
 import json
 import os
 from datetime import datetime, timedelta
 from typing import List, Tuple
 
 import pandas as pd
-
-# FIX: Path build with os.path.join
 
 
 class MetaDataExtraction:

@@ -1,9 +1,11 @@
-# TODO: PM10 und PM2.5 Sensoren und ihre IDs auslesen und für die nächste Abfrage vorbereiten
+# Generate a list of all sensor and write it to file
+
 import csv
+
 import pandas as pd
 import requests
 
-df = pd.read_csv("stationID.csv")
+df = pd.read_csv("../../data/pollution/stationID.csv")
 stationIDs = df["StationID"]
 
 listOfAllSensors = []
@@ -19,7 +21,7 @@ for entry in stationIDs:
             listOfAllSensors.append({"stationID": entry, "sensorID": sensorID, "sensorType": sensorType})
 
 keys = listOfAllSensors[0].keys()
-with open("allSensors.csv", "w") as output_file:
+with open("../../data/pollution/allSensors.csv", "w") as output_file:
     dict_writer = csv.DictWriter(output_file, keys)
     dict_writer.writeheader()
     dict_writer.writerows(listOfAllSensors)
