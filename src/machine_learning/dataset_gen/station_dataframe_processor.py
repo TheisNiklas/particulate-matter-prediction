@@ -2,6 +2,12 @@ import pandas as pd
 
 
 class StationDataframeProcessor:
+    """
+    Process a dataframe with a datetime index and at least the column `pm10` and interpolates the `pm10` column.
+    Values in the `pm10` column are set to `NaN` if they are <= 0.
+    All gaps containing `NaN` values with a max length of 5 hours are interpolated.
+    The remaining rows with NaN values are dropped.
+    """
     max_gap_size: pd.Timedelta
 
     def __init__(self, max_gap_size=5):

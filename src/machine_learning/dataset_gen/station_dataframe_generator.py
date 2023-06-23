@@ -8,10 +8,15 @@ from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from weatherdata.weather_data import HourlyData, ModelBasedOptions, WeatherData  # pylint: disable=import-error
+from weatherdata.weather_data import (  # pylint: disable=import-error
+    HourlyData, ModelBasedOptions, WeatherData)
 
 
 class StationDataframeGenerator:
+    """
+    Generate a dataframe per station containing the data of all years.
+    Queries the weather data for the location of the stations and joins it with the pm10 values.
+    """
     @staticmethod
     def generate_station_dataframe(station_id: int, year_range: List[int]) -> pd.DataFrame:
         df = None
