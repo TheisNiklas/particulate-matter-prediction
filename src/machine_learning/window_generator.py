@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -6,15 +8,26 @@ from plotly.subplots import make_subplots
 
 
 class WindowGenerator:
-    """_summary_"""
+    """
+    Class for creating the windows used for training, validation and testing. \\
+    With `train`, `val` and `test` provides the datasets that can be passed to `model.fit`
+    """
 
-    def __init__(
-        self, input_width: int, label_width: int, shift: int, df: pd.DataFrame, label_columns=None, window_step=1
-    ):
+    def __init__(self, input_width: int, label_width: int, df: pd.DataFrame, label_columns=None, window_step=1):
+        """
+        Initialise a new WindowGenerator
+
+        Args:
+            input_width (int): Length of the input
+            label_width (int): Length of the label that should be predicted
+            df (pd.DataFrame): Dataframe out of which the windows are generated
+            label_columns (_type_, optional): List of the column names from `df` that should be included in the label. Defaults to None.
+            window_step (int, optional): Increment in which a new window should be started after the previous one. Defaults to 1.
+        """
         self.df = df
         self.window_step = window_step
 
-        self.total_window_size = input_width + shift
+        self.total_window_size = input_width + label_width
         # set datasets
         self.__generateWindows()
 
@@ -27,7 +40,6 @@ class WindowGenerator:
         # Work out the window parameters.
         self.input_width = input_width
         self.label_width = label_width
-        self.shift = shift
 
         self.input_slice = slice(0, input_width)
         self.input_indices = np.arange(self.total_window_size)[self.input_slice]
@@ -44,36 +56,27 @@ class WindowGenerator:
         # Seperates windows into labels and inputs
         inputs = features[:, self.input_slice, :]
         labels = features[:, self.labels_slice, :]
-
         if self.label_columns is not None:
             labels = tf.stack([labels[:, :, self.column_indices[name]] for name in self.label_columns], axis=-1)
 
-            #labels = tf.stack(
-            #    [
-            #        tf.one_hot(tf.cast(labels[:, :, self.column_indices[name]], "int64"), 6)
-            #        for name in self.label_columns
-            #    ],
-            #    axis=-1,
-            #)
-
-            print(labels.shape)
-        # one hot encode labels
         # Slicing doesn't preserve static shape information, so set the shapes
         # manually. This way the `tf.data.Datasets` are easier to inspect.
         inputs.set_shape([None, self.input_width, None])
-        #labels.set_shape([None, self.label_width, 6])
         labels.set_shape([None, self.label_width, None])
 
         return inputs, labels
 
-    def plot(
-        self,
-        model=None,
-        plot_col="pm10",
-        max_subplots=3,
-        offset=0,
-        plot_version="train",
-    ):
+    def plot(self, model=None, plot_col="pm10", max_subplots=3, offset=0, plot_version="train"):
+        """
+        Plot windows out of the select dataset
+
+        Args:
+            model (_type_, optional): A trained model. Defaults to None. If not None plots a prediction.
+            plot_col (str, optional): The column that should be ploted for the input. Defaults to "pm10".
+            max_subplots (int, optional): Count of windows that should be plotted. Defaults to 3.
+            offset (int, optional): Offset within the dataset after which the next windows are plotted. Defaults to 0.
+            plot_version (str, optional): dataset the windows are taken from. Can be "train", "val" or "test". Defaults to "train".
+        """
         if plot_version == "val":
             inputs, labels = self.split_window(self.windows_val[offset : offset + max_subplots])
         elif plot_version == "train":
@@ -86,12 +89,14 @@ class WindowGenerator:
         plot_col_index = self.column_indices[plot_col]
         max_n = min(max_subplots, len(inputs))
         for n in range(max_n):
+            show_legend = n == 0
             fig.add_trace(
                 go.Scatter(
                     x=self.input_indices,
                     y=inputs[n, :, plot_col_index].numpy(),
                     name="Inputs",
-                    marker=dict(color="blue"),
+                    marker={"color": "blue"},
+                    show_legend=show_legend,
                 ),
                 row=n + 1,
                 col=1,
@@ -102,10 +107,6 @@ class WindowGenerator:
             else:
                 label_col_index = plot_col_index
 
-            # if label_col_index is None:
-            # plot pm10 prediction value by default
-            #    label_col_index = self.label_columns_indices.get("pm10", None)
-
             if label_col_index is None:
                 # could not find pm10 index
                 continue
@@ -115,8 +116,9 @@ class WindowGenerator:
                     x=self.label_indices,
                     y=labels[n, :, label_col_index].numpy(),
                     name="Labels",
-                    marker=dict(color="#2ca02c"),
+                    marker={"color": "#2ca02c"},
                     mode="markers",
+                    show_legend=show_legend,
                 ),
                 row=n + 1,
                 col=1,
@@ -126,10 +128,11 @@ class WindowGenerator:
                 fig.add_trace(
                     go.Scatter(
                         x=self.label_indices,
-                        y=[p.argmax() for  p in predictions[n, :, :].numpy()],
+                        y=predictions[n, :, label_col_index].numpy(),
                         name="Predictions",
-                        marker=dict(color="#ff7f0e"),
+                        marker={"color": "#ff7f0e"},
                         mode="markers",
+                        show_legend=show_legend,
                     ),
                     row=n + 1,
                     col=1,
@@ -139,7 +142,9 @@ class WindowGenerator:
         fig.update_yaxes(title_text=plot_col, row=2, col=1)
         fig.update_yaxes(title_text=plot_col, row=3, col=1)
 
-        fig.update_layout(height=1200)
+        fig.update_layout(
+            height=1200, title_text=f"Windows {offset}-{offset + max_subplots} from dataset {plot_version}"
+        )
         fig.show()
 
     def __generateWindows(self, seed=42, train_size=0.7, val_size=0.1, test_size=0.2):
@@ -167,14 +172,6 @@ class WindowGenerator:
         self.df.drop("timestamp", axis=1, inplace=True)
 
     def make_dataset(self, data):
-        # data = np.array(data, dtype=np.float32)
-        # ds = tf.keras.utils.timeseries_dataset_from_array(
-        #   data=data,
-        #    targets=None,
-        #    sequence_length=self.total_window_size,
-        #    sequence_stride=1,
-        #    shuffle=True,
-        #    batch_size=32,)
         ds = tf.data.Dataset.from_tensor_slices(data)
         ds = ds.batch(32)
         ds = ds.map(self.split_window)

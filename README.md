@@ -30,3 +30,17 @@ dvc pull
 ```
 
 The data is then loaded into the folder `data`.
+
+### Viewing training results
+
+The training process for all models was tracker using [neptuni.ai](https://neptune.ai).
+
+The results from the initial model structure tests can be found [here](https://app.neptune.ai/o/data-mining-team2/org/initial-model-tests/runs/details?viewId=995d31f5-b639-4eed-98b9-721d3f6af50f).
+
+All further tests can be found [here](https://app.neptune.ai/o/data-mining-team2/org/model-tests/runs/table?viewId=995f0563-1e7a-4513-b399-85c5addd3334).
+
+Additional to the recorded loss and metrics from training and validation, for every model additional information was saved. These can be found in the run details in the tab "All metadata":
+
+- `parameters`: Selected parameters used for training
+- `eval`: Test metrics every 50 epochs
+- `model_names`: Names the models were saved with every 50 epochs

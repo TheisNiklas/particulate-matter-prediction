@@ -18,3 +18,4 @@ ydata_profiling
 neptune
 neptune-tensorflow-keras
 pyarrow
+calplot

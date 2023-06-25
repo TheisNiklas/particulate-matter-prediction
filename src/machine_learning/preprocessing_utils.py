@@ -23,4 +23,4 @@ def prep_window_generator():
     df["winddirection_10m_sin"] = np.sin(wd_rad)
     df["winddirection_10m_cos"] = np.cos(wd_rad)
 
-    return WindowGenerator(input_width=24 * 7, label_width=24, shift=24, df=df.copy(), label_columns=["pm10"])
+    return WindowGenerator(input_width=24 * 7, label_width=24, df=df.copy(), label_columns=["pm10"])
