@@ -60,4 +60,4 @@ Additional to the recorded loss and metrics from training and validation, for ev
   - `machine_learning` - Notebooks and utilities used to prepair the data for machine learning and executing the model training
   - `models` - The saved models that where trained
   - `pollution_data` - Notebooks and classes used to query the pollution data from the api and process the downloaded excel files
-  - `weatherdata` - Classes to
+  - `weatherdata` - Classes to get weather data from the open-meteo api
