@@ -14,7 +14,7 @@ With the processed data machine learning models are trained to predict future pm
 Install the required python dependencies. \
 Optinally use a virtual python environment for the project.
 
-```ps
+```powershell
 python -m venv .env
 .env/Scripts/activate
 pip install -r requirements.txt
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 For loading the data the tool [dvc](https://dvc.org/) is required. \
 After installation of the tool, the data can be loaded with the following command.
 
-```ps
+```powershell
 dvc pull
 ```
 
