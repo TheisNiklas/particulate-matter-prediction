@@ -44,3 +44,20 @@ Additional to the recorded loss and metrics from training and validation, for ev
 - `parameters`: Selected parameters used for training
 - `eval`: Test metrics every 50 epochs
 - `model_names`: Names the models were saved with every 50 epochs
+
+### Repository structure
+
+- `data` - Only avalaible after executing `dvc pull`
+  - `model-training` - Loss and metrics from model runs used for plotting results
+  - `pollution/raw` - The raw data aquired from the api and the excel files grouped by year, pollution type and station
+  - `pollution/processed` - The interpolated and categorized data in preparation for machine learning
+- `docs` - The documentation generated during the project
+  - `presentations` - Pdfs of the presenstations fro this project
+- `plots` - The exported plots which were used during presentations
+- `scripts` - A script for automated generations of the api documentation for the weather data classes
+- `src` - All source code
+  - `data_visualisation` - Notebooks visualising different parts of the data
+  - `machine_learning` - Notebooks and utilities used to prepair the data for machine learning and executing the model training
+  - `models` - The saved models that where trained
+  - `pollution_data` - Notebooks and classes used to query the pollution data from the api and process the downloaded excel files
+  - `weatherdata` - Classes to
