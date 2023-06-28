@@ -1,0 +1,219 @@
+Start run: base_run
+Start run: base_run
+Start run: lstm_size_64
+Start run: lstm_size_64
+Start run: lstm_size_64
+Start run: lstm_size_64
+Start run: lstm_size_64
+Start run: lstm_size_64
+Start run: lstm_size_64
+Finished run: lstm_size_64
+Start run: two_lstm_size_32
+Finished run: two_lstm_size_32
+Start run: two_lstm_size_64
+Finished run: two_lstm_size_64
+Start run: bidirectional_lstm
+Finished run: bidirectional_lstm
+Start run: bidirectional_two_lstm
+Finished run: bidirectional_two_lstm
+Start run: average_pooling
+Finished run: average_pooling
+Start run: kernel_sizes_adjusted_to_hours
+Finished run: kernel_sizes_adjusted_to_hours
+Start run: two_dense_layer
+Finished run: two_dense_layer
+Start run: dropout_0.4
+Finished run: dropout_0.4
+Start run: dropout_0.5
+Finished run: dropout_0.5
+Start run: dropout_0.6
+Finished run: dropout_0.6
+Start run: loss_huber
+Finished run: loss_huber
+Start run: station_530
+Finished run: station_530
+Start run: station_538
+Finished run: station_538
+Start run: station_538_without_sin
+Finished run: station_538_without_sin
+Start run: station_530_7lstmlayer
+Finished run: station_530_7lstmlayer
+Start run: station_538_7lstmlayer
+Start run: station_538_7lstmlayer
+Finished run: station_538_7lstmlayer
+Start run: station_538_7lstmlayer
+Start run: station_530_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_1' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_1' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_530_without_lambda
+Start run: station_538_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_3' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_3' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_538_without_lambda
+Start run: station_530_and_538_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_5' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_5' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_530_and_538_without_lambda
+Start run: station_530_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_7' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_7' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_530_without_lambda
+Start run: station_538_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_9' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_9' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_538_without_lambda
+Start run: station_530_and_538_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_11' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_11' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_530_and_538_without_lambda
+Start run: station_530_with_lambda
+Finished run: station_530_with_lambda
+Start run: station_538_with_lambda
+Finished run: station_538_with_lambda
+Start run: station_530_and_538_with_lambda
+Finished run: station_530_and_538_with_lambda
+Start run: station_538_without_lambda
+in user code:
+
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\engine\training.py", line 1050, in train_step
+        y_pred = self(x, training=True)
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\utils\traceback_utils.py", line 70, in error_handler
+        raise e.with_traceback(filtered_tb) from None
+    File "e:\FHBielefeld\Master\DataMining\feinstaubprojekt-polen\.env\lib\site-packages\keras\layers\reshaping\reshape.py", line 118, in _fix_unknown_dimension
+        raise ValueError(msg)
+
+    ValueError: Exception encountered when calling layer 'reshape_1' (type Reshape).
+    
+    total size of new array must be unchanged, input_shape = [42, 24], output_shape = [24, 1]
+    
+    Call arguments received by layer 'reshape_1' (type Reshape):
+      • inputs=tf.Tensor(shape=(None, 42, 24), dtype=float32)
+
+Finished run: station_538_without_lambda
+Start run: station_538_without_lambda
